@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'idea'
 }
 
 group 'sokahr'
@@ -12,8 +13,26 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform {
+        includeEngines 'junit-jupiter', 'junit-vintage'
+    }
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+
+    reports {
+        html.enabled = true
+    }
+}
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.1.1'
+    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.1'
+
+    testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.1.1'
+    testCompile group: 'org.junit.platform', name: 'junit-platform-gradle-plugin', version: '1.1.1'
 }
 
 mainClassName = "TicTacToeTwo"

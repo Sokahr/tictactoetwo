@@ -41,4 +41,10 @@ ini, ins, iw, jar, jsp, js, jse, pif, scr, shs, sh, vb, vbe, vbs, ws,
 wsc, wsf, wsh & msi
 
 ##How to Run
+You will need **JDK 1.8.0_172**
+If you run the gradle script directly it is build with **Gradle 4.7**
+Otherwise just use the gradle-wrapper.jar in /gradle/wrapper to execute the gradle tasks.
+
+
+ 
 
