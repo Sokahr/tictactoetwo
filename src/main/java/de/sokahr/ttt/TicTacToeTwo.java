@@ -15,6 +15,25 @@ class TicTacToeTwo {
         if (properties == null) {
             throw new IllegalArgumentException("properties cannot be null");
         }
+        initGameField(properties);
+
+        validateProperty(ConfigurationKeys.PLAYER_A_SYMBOL, properties);
+        String playerASymbolProp = properties.getProperty(ConfigurationKeys.PLAYER_A_SYMBOL);
+        if (playerASymbolProp.length() > 1) {
+            throw new IllegalArgumentException(ConfigurationKeys.PLAYER_A_SYMBOL + " is not a single character");
+        }
+        char playerASymbol = playerASymbolProp.charAt(0);
+
+        validateProperty(ConfigurationKeys.PLAYER_B_SYMBOL, properties);
+        String playerBSymbolProp = properties.getProperty(ConfigurationKeys.PLAYER_B_SYMBOL);
+        if (playerBSymbolProp.length() > 1) {
+            throw new IllegalArgumentException(ConfigurationKeys.PLAYER_B_SYMBOL + " is not a single character");
+        }
+        char playerBSymbol = playerASymbolProp.charAt(0);
+        validateProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, properties);
+    }
+
+    private void initGameField(Properties properties) {
         validateProperty(ConfigurationKeys.PLAYGROUND_SIZE, properties);
         int size;
         try {
@@ -23,9 +42,6 @@ class TicTacToeTwo {
             throw new IllegalArgumentException(ConfigurationKeys.PLAYGROUND_SIZE + " is not a number");
         }
         gameField = new TicTacToeGameField(size);
-        validateProperty(ConfigurationKeys.PLAYER_A_SYMBOL, properties);
-        validateProperty(ConfigurationKeys.PLAYER_B_SYMBOL, properties);
-        validateProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, properties);
     }
 
     private void validateProperty(String key, Properties properties) throws IllegalArgumentException {

@@ -97,11 +97,32 @@ class TicTacToeTwoTest {
     }
 
     @Test
-    void testConstructorFailesWhenSizeNotANumber() {
+    @DisplayName("Constructor fails when the playground.size is not a number")
+    void testConstructorFailWhenSizeNotANumber() {
         Throwable e = assertThrows(IllegalArgumentException.class, () -> {
             properties.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, "xl");
             new TicTacToeTwo(properties, gameIO);
         });
         assertEquals(ConfigurationKeys.PLAYGROUND_SIZE + " is not a number", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Contructor fails when the player.a.symbol is not a character")
+    void testConstructorFailWhenThePlayerASymbolIsNotACharacter() {
+        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
+            properties.setProperty(ConfigurationKeys.PLAYER_A_SYMBOL, "playerA");
+            new TicTacToeTwo(properties, gameIO);
+        });
+        assertEquals(ConfigurationKeys.PLAYER_A_SYMBOL + " is not a single character", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Constructor fails when the playerb.symbol is not a character")
+    void testConstructorFailWhenPlayerBSymbolIsNotACharacter() {
+        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
+            properties.setProperty(ConfigurationKeys.PLAYER_B_SYMBOL, "playerB");
+            new TicTacToeTwo(properties, gameIO);
+        });
+        assertEquals(ConfigurationKeys.PLAYER_B_SYMBOL + " is not a single character", e.getMessage());
     }
 }
