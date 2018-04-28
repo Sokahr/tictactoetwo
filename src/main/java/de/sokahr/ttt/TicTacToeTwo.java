@@ -3,7 +3,14 @@ package de.sokahr.ttt;
 import java.util.Properties;
 
 public class TicTacToeTwo {
-    public TicTacToeTwo(Properties properties) {
+
+    private GameIO gameIO;
+
+    public TicTacToeTwo(Properties properties, GameIO gameIO) {
+        this.gameIO = gameIO;
+        if (gameIO == null) {
+            throw new IllegalArgumentException("gameIO must be provided");
+        }
         if (properties == null) {
             throw new IllegalArgumentException("properties cannot be null");
         }
