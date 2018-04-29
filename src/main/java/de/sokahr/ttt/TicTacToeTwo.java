@@ -1,5 +1,6 @@
 package de.sokahr.ttt;
 
+import de.sokahr.ttt.player.ComputerPlayer;
 import de.sokahr.ttt.player.HumanPlayer;
 import de.sokahr.ttt.player.Player;
 
@@ -23,24 +24,20 @@ class TicTacToeTwo {
         }
         initGameField(properties);
 
-        validateProperty(ConfigurationKeys.PLAYER_A_SYMBOL, properties);
-        String playerASymbolProp = properties.getProperty(ConfigurationKeys.PLAYER_A_SYMBOL);
-        if (playerASymbolProp.length() > 1) {
-            throw new IllegalArgumentException(ConfigurationKeys.PLAYER_A_SYMBOL + " is not a single character");
-        }
-        char playerASymbol = playerASymbolProp.charAt(0);
-
-        validateProperty(ConfigurationKeys.PLAYER_B_SYMBOL, properties);
-        String playerBSymbolProp = properties.getProperty(ConfigurationKeys.PLAYER_B_SYMBOL);
-        if (playerBSymbolProp.length() > 1) {
-            throw new IllegalArgumentException(ConfigurationKeys.PLAYER_B_SYMBOL + " is not a single character");
-        }
-        char playerBSymbol = playerBSymbolProp.charAt(0);
-        validateProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, properties);
-
         players = new ArrayList<>();
-        players.add(new HumanPlayer(playerASymbol));
-        players.add(new HumanPlayer(playerBSymbol));
+        players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_A_SYMBOL)));
+        players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
+        players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
+
+    }
+
+    private char getSymbol(Properties properties, String symbolKey) {
+        validateProperty(symbolKey, properties);
+        String playerASymbolProp = properties.getProperty(symbolKey);
+        if (playerASymbolProp.length() > 1) {
+            throw new IllegalArgumentException(symbolKey + " is not a single character");
+        }
+        return playerASymbolProp.charAt(0);
     }
 
     private void initGameField(Properties properties) {

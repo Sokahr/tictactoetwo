@@ -1,6 +1,8 @@
 package de.sokahr.ttt;
 
+import de.sokahr.ttt.player.ComputerPlayer;
 import de.sokahr.ttt.player.HumanPlayer;
+import de.sokahr.ttt.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,8 +40,8 @@ class TicTacToeTwoTest {
     @DisplayName("Constructor does not accept a properties file with missing key playground.size")
     void testContructorFailWithInvalidKeyFieldSize() {
         Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            Properties prop = new Properties();
-            new TicTacToeTwo(prop, gameIO);
+            properties.remove(ConfigurationKeys.PLAYGROUND_SIZE);
+            new TicTacToeTwo(properties, gameIO);
         });
         assertEquals("property '" + ConfigurationKeys.PLAYGROUND_SIZE + "' not found", e.getMessage());
     }
@@ -48,9 +50,8 @@ class TicTacToeTwoTest {
     @DisplayName("Constructor does not accept a properties file with missing key player.a.symbol")
     void testConstructorFailWithInvalidKeyPlayerASymbol() {
         Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            Properties prop = new Properties();
-            prop.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, "3");
-            new TicTacToeTwo(prop, gameIO);
+            properties.remove(ConfigurationKeys.PLAYER_A_SYMBOL);
+            new TicTacToeTwo(properties, gameIO);
         });
         assertEquals("property '" + ConfigurationKeys.PLAYER_A_SYMBOL + "' not found", e.getMessage());
     }
@@ -59,10 +60,8 @@ class TicTacToeTwoTest {
     @DisplayName("Constructor does not accept a properties file with missing key player.b.symbol")
     void testConstructorFailWithInvalidKeyPlayerBSymbol() {
         Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            Properties prop = new Properties();
-            prop.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, "3");
-            prop.setProperty(ConfigurationKeys.PLAYER_A_SYMBOL, "O");
-            new TicTacToeTwo(prop, gameIO);
+            properties.remove(ConfigurationKeys.PLAYER_B_SYMBOL);
+            new TicTacToeTwo(properties, gameIO);
         });
         assertEquals("property '" + ConfigurationKeys.PLAYER_B_SYMBOL + "' not found", e.getMessage());
     }
@@ -71,11 +70,8 @@ class TicTacToeTwoTest {
     @DisplayName("Constructor does not accept a properties file with missing key player.computer.symbol")
     void testConstructorFailWithInvalidKeyPlayerComputerSymbol() {
         Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            Properties prop = new Properties();
-            prop.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, "3");
-            prop.setProperty(ConfigurationKeys.PLAYER_A_SYMBOL, "O");
-            prop.setProperty(ConfigurationKeys.PLAYER_B_SYMBOL, "X");
-            new TicTacToeTwo(prop, gameIO);
+            properties.remove(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL);
+            new TicTacToeTwo(properties, gameIO);
         });
         assertEquals("property '" + ConfigurationKeys.PLAYER_COMPUTER_SYMBOL + "' not found", e.getMessage());
     }
@@ -83,7 +79,7 @@ class TicTacToeTwoTest {
     @Test
     @DisplayName("Constructor does not accept null as gameIO")
     void testConstructorFailWithNullAsGameIO() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> new TicTacToeTwo(new Properties(), null));
+        Throwable e = assertThrows(IllegalArgumentException.class, () -> new TicTacToeTwo(properties, null));
         assertEquals("gameIO must be provided", e.getMessage());
     }
 
@@ -136,5 +132,35 @@ class TicTacToeTwoTest {
         assertThat(ticTacToeTwo.getPlayers()).size().isGreaterThanOrEqualTo(2);
         assertThat(ticTacToeTwo.getPlayers()).hasAtLeastOneElementOfType(HumanPlayer.class);
         assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('X', 'O');
+    }
+
+    @Test
+    @DisplayName("Constructor fails when the player.computer.symbol is not a character")
+    void testConstructorFailsWhenPlayerComputerSymbolIsNotACharacter() {
+        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
+            properties.setProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, "playerC");
+            new TicTacToeTwo(properties, gameIO);
+        });
+        assertEquals(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL + " is not a single character", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Constructor will create one computer player with the corresponding symbol")
+    void testConstructorCreatesComputerPlayer() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
+        assertNotNull(ticTacToeTwo.getPlayers());
+        assertThat(ticTacToeTwo.getPlayers()).size().isGreaterThanOrEqualTo(1);
+        assertThat(ticTacToeTwo.getPlayers()).hasAtLeastOneElementOfType(ComputerPlayer.class);
+        assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('#');
+    }
+
+    @Test
+    @DisplayName("Constructor will create all Players")
+    void tetsConstructorCreatesAllPlayers() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
+        assertNotNull(ticTacToeTwo.getPlayers());
+        assertThat(ticTacToeTwo.getPlayers()).size().isEqualTo(3);
+        assertThat(ticTacToeTwo.getPlayers()).hasOnlyElementsOfType(Player.class);
+        assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('O','X','#');
     }
 }
