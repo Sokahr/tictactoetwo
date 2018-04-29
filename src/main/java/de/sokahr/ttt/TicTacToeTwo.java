@@ -1,11 +1,17 @@
 package de.sokahr.ttt;
 
+import de.sokahr.ttt.player.HumanPlayer;
+import de.sokahr.ttt.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 class TicTacToeTwo {
 
     private GameIO gameIO;
     private TicTacToeGameField gameField;
+    private List<Player> players;
 
     TicTacToeTwo(Properties properties, GameIO gameIO) {
         this.gameIO = gameIO;
@@ -29,8 +35,12 @@ class TicTacToeTwo {
         if (playerBSymbolProp.length() > 1) {
             throw new IllegalArgumentException(ConfigurationKeys.PLAYER_B_SYMBOL + " is not a single character");
         }
-        char playerBSymbol = playerASymbolProp.charAt(0);
+        char playerBSymbol = playerBSymbolProp.charAt(0);
         validateProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, properties);
+
+        players = new ArrayList<>();
+        players.add(new HumanPlayer(playerASymbol));
+        players.add(new HumanPlayer(playerBSymbol));
     }
 
     private void initGameField(Properties properties) {
@@ -52,5 +62,9 @@ class TicTacToeTwo {
 
     TicTacToeGameField getGameField() {
         return gameField;
+    }
+
+    List<Player> getPlayers() {
+        return players;
     }
 }

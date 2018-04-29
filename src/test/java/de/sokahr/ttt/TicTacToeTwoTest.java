@@ -1,5 +1,6 @@
 package de.sokahr.ttt;
 
+import de.sokahr.ttt.player.HumanPlayer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 
 import java.util.Properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -117,12 +119,22 @@ class TicTacToeTwoTest {
     }
 
     @Test
-    @DisplayName("Constructor fails when the playerb.symbol is not a character")
+    @DisplayName("Constructor fails when the player.b.symbol is not a character")
     void testConstructorFailWhenPlayerBSymbolIsNotACharacter() {
         Throwable e = assertThrows(IllegalArgumentException.class, () -> {
             properties.setProperty(ConfigurationKeys.PLAYER_B_SYMBOL, "playerB");
             new TicTacToeTwo(properties, gameIO);
         });
         assertEquals(ConfigurationKeys.PLAYER_B_SYMBOL + " is not a single character", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Constructor will create two human players with the corresponding symbol")
+    void testConstructorCreatesHumanPlayers() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
+        assertNotNull(ticTacToeTwo.getPlayers());
+        assertThat(ticTacToeTwo.getPlayers()).size().isGreaterThanOrEqualTo(2);
+        assertThat(ticTacToeTwo.getPlayers()).hasAtLeastOneElementOfType(HumanPlayer.class);
+        assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('X', 'O');
     }
 }
