@@ -30,6 +30,8 @@ class TicTacToeTwo {
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
         players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
         Collections.shuffle(players);
+
+        this.gameIO.drawGame(gameField.getFields());
     }
 
     private char getSymbol(Properties properties, String symbolKey) {
