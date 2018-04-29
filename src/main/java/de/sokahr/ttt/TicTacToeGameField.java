@@ -2,7 +2,7 @@ package de.sokahr.ttt;
 
 class TicTacToeGameField {
 
-    private Character[][] fields;
+    private char[][] fields;
 
     TicTacToeGameField(int size) {
         if (size < 3) {
@@ -11,10 +11,10 @@ class TicTacToeGameField {
         if (size > 10) {
             throw new IllegalArgumentException("Gamefield size must be smaller or equal 10");
         }
-        fields = new Character[size][size];
+        fields = new char[size][size];
     }
 
-    Character[][] getFields() {
+    char[][] getFields() {
         return fields;
     }
 }
