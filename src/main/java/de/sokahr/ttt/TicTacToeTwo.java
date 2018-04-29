@@ -5,6 +5,7 @@ import de.sokahr.ttt.player.HumanPlayer;
 import de.sokahr.ttt.player.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,7 +29,9 @@ class TicTacToeTwo {
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_A_SYMBOL)));
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
         players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
+        Collections.shuffle(players);
 
+        this.gameIO.drawGame(gameField.getFields());
     }
 
     private char getSymbol(Properties properties, String symbolKey) {

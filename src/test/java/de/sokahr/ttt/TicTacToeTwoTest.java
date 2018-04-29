@@ -13,6 +13,7 @@ import java.util.Properties;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class TicTacToeTwoTest {
 
@@ -156,11 +157,18 @@ class TicTacToeTwoTest {
 
     @Test
     @DisplayName("Constructor will create all Players")
-    void tetsConstructorCreatesAllPlayers() {
+    void testConstructorCreatesAllPlayers() {
         TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
         assertNotNull(ticTacToeTwo.getPlayers());
         assertThat(ticTacToeTwo.getPlayers()).size().isEqualTo(3);
         assertThat(ticTacToeTwo.getPlayers()).hasOnlyElementsOfType(Player.class);
         assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('O','X','#');
+    }
+
+    @Test
+    @DisplayName("calls drawGame on GameIO")
+    void testCallsDrawGame() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
+        verify(gameIO).drawGame(ticTacToeTwo.getGameField().getFields());
     }
 }
