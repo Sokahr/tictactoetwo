@@ -156,7 +156,7 @@ class TicTacToeTwoTest {
 
     @Test
     @DisplayName("Constructor will create all Players")
-    void tetsConstructorCreatesAllPlayers() {
+    void testConstructorCreatesAllPlayers() {
         TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
         assertNotNull(ticTacToeTwo.getPlayers());
         assertThat(ticTacToeTwo.getPlayers()).size().isEqualTo(3);
