@@ -30,17 +30,21 @@ public class TicTacToeTwo {
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
         players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
         Collections.shuffle(players);
-
-        this.gameIO.drawGame(gameField.getFields());
         Iterator<Player> playerIterator = players.iterator();
-        if (!playerIterator.hasNext()) {
-            playerIterator = players.iterator();
+
+        while(TicTacToeGameValidator.validateMovesPossible(gameField.getFields())) {
+            this.gameIO.drawGame(gameField.getFields());
+            if (!playerIterator.hasNext()) {
+                playerIterator = players.iterator();
+            }
+            Player currentPlayer = playerIterator.next();
+            Point move;
+            do {
+                move = currentPlayer.makeMove(gameIO, gameField.getFields());
+            } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
+
         }
-        Player currentPlayer = playerIterator.next();
-        Point move;
-        do {
-            move = currentPlayer.makeMove(gameIO, gameField.getFields());
-        } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
+        gameIO.showInfoMessage("Draw nobody won the game");
     }
 
     private char getSymbol(Properties properties, String symbolKey) {
