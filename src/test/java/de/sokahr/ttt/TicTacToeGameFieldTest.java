@@ -39,4 +39,35 @@ class TicTacToeGameFieldTest {
             assertEquals(size, ticTacToeGameField.getFields()[0].length);
         }
     }
+
+    @Test
+    @DisplayName("setMove returns true for valid move and sets symbol on the field")
+    void testSetMoveReturnsTrueForValidMoveAndSetSymbol() {
+        TicTacToeGameField ticTacToeGameField = new TicTacToeGameField(3);
+        boolean set = ticTacToeGameField.setMove(0,0, 'X');
+        assertEquals(ticTacToeGameField.fields[0][0], 'X');
+        assertTrue(set);
+    }
+
+    @Test
+    @DisplayName("setMove returns false for occupied move and do not set the symbol on that field")
+    void testSetMoveReturnsFalseForOccupiedMove() {
+        TicTacToeGameField ticTacToeGameField = new TicTacToeGameField(3);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                ticTacToeGameField.fields[i][j]='X';
+            }
+        }
+        boolean set = ticTacToeGameField.setMove(2,0, 'O');
+        assertFalse(set);
+        assertNotEquals(ticTacToeGameField.fields[2][0], 'O');
+    }
+
+    @Test
+    @DisplayName("set move returns false for invalid move")
+    void testSetMoveReturnsFalseForInvalidMove() {
+        TicTacToeGameField ticTacToeGameField = new TicTacToeGameField(3);
+        boolean set = ticTacToeGameField.setMove(3,3, 'X');
+        assertFalse(set);
+    }
 }
