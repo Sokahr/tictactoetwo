@@ -1,5 +1,9 @@
 package de.sokahr.ttt;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class TicTacToeIOSystem implements GameIO {
 
     @Override
@@ -16,6 +20,25 @@ public class TicTacToeIOSystem implements GameIO {
         }
         drawRowBorder(fieldValues.length);
         drawColumnNumbers(fieldValues.length);
+    }
+
+    @Override
+    public String getInput() {
+        InputStreamReader inputData = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(inputData);
+
+        try {
+            return bufferedReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     private void drawRowFields(int columns, int rowNumber,char[][] fieldValues) {

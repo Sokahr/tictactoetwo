@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +18,7 @@ class TicTacToeIOSystemTest {
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private PrintStream sysOut;
     private PrintStream sysErr;
+    private InputStream inputStream;
 
     @BeforeEach
     void setUp() {
@@ -24,12 +27,15 @@ class TicTacToeIOSystemTest {
 
         sysErr = System.err;
         System.setErr(new PrintStream(errContent));
+
+        inputStream = System.in;
     }
 
     @AfterEach
     void tearDown() {
         System.setOut(sysOut);
         System.setErr(sysErr);
+        System.setIn(inputStream);
     }
 
     @Test
@@ -91,6 +97,19 @@ class TicTacToeIOSystemTest {
         ps.println("   1   2   3   4   ");
         ticTacToeIOSystem.drawGame(fields);
         assertEquals(expectedOutput.toString(), outContent.toString());
+    }
+
+    @Test
+    @DisplayName("getInput returns the current line of input")
+    void testGetInput() {
+        TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
+        System.setIn(new ByteArrayInputStream("test input".getBytes()));
+        String input = ticTacToeIOSystem.getInput();
+        assertEquals("test input", input);
+
+        System.setIn(new ByteArrayInputStream("1,2".getBytes()));
+        input = ticTacToeIOSystem.getInput();
+        assertEquals("1,2", input);
 
     }
 }

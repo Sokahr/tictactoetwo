@@ -2,7 +2,7 @@ package de.sokahr.ttt;
 
 class TicTacToeGameField {
 
-    private char[][] fields;
+    protected char[][] fields;
 
     TicTacToeGameField(int size) {
         if (size < 3) {
@@ -15,6 +15,17 @@ class TicTacToeGameField {
     }
 
     char[][] getFields() {
-        return fields;
+        return fields.clone();
+    }
+
+    boolean setMove(int x, int y, char symbol) {
+        boolean moveMade = false;
+        if(x<fields.length && y<fields[x].length) {
+            if (fields[x][y] == '\0'){
+                fields[x][y] = symbol;
+                moveMade = true;
+            }
+        }
+        return moveMade;
     }
 }
