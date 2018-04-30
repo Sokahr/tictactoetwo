@@ -41,6 +41,11 @@ public class TicTacToeIOSystem implements GameIO {
         return null;
     }
 
+    @Override
+    public void showInfoMessage(String message) {
+        System.out.println(message);
+    }
+
     private void drawRowFields(int columns, int rowNumber,char[][] fieldValues) {
         StringBuilder line = new StringBuilder();
         line.append(rowNumber+1);

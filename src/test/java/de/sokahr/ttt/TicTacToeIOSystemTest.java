@@ -110,6 +110,12 @@ class TicTacToeIOSystemTest {
         System.setIn(new ByteArrayInputStream("1,2".getBytes()));
         input = ticTacToeIOSystem.getInput();
         assertEquals("1,2", input);
+    }
 
+    @Test
+    void testShowInfoMessagePrintsMessage() {
+        TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
+        ticTacToeIOSystem.showInfoMessage("Info");
+        assertTrue(outContent.toString().contains("Info"));
     }
 }
