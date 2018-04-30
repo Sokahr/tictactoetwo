@@ -4,18 +4,17 @@ import de.sokahr.ttt.player.ComputerPlayer;
 import de.sokahr.ttt.player.HumanPlayer;
 import de.sokahr.ttt.player.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
 
-class TicTacToeTwo {
+public class TicTacToeTwo {
 
     private GameIO gameIO;
     private TicTacToeGameField gameField;
     private List<Player> players;
 
-    TicTacToeTwo(Properties properties, GameIO gameIO) {
+    public TicTacToeTwo(Properties properties, GameIO gameIO) {
         this.gameIO = gameIO;
         if (gameIO == null) {
             throw new IllegalArgumentException("gameIO must be provided");
@@ -26,12 +25,22 @@ class TicTacToeTwo {
         initGameField(properties);
 
         players = new ArrayList<>();
-        players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_A_SYMBOL)));
+        players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_A_SYMBOL
+        )));
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
         players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
         Collections.shuffle(players);
 
         this.gameIO.drawGame(gameField.getFields());
+        Iterator<Player> playerIterator = players.iterator();
+        if (!playerIterator.hasNext()) {
+            playerIterator = players.iterator();
+        }
+        Player currentPlayer = playerIterator.next();
+        Point move;
+        do {
+            move = currentPlayer.makeMove(gameIO, gameField.getFields());
+        } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
     }
 
     private char getSymbol(Properties properties, String symbolKey) {

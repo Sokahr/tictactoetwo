@@ -1,3 +1,6 @@
+import de.sokahr.ttt.TicTacToeIOSystem;
+import de.sokahr.ttt.TicTacToeTwo;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +15,7 @@ public class Main {
             System.out.println("properties are empty");
             return;
         }
+        new TicTacToeTwo(properties, new TicTacToeIOSystem());
 
     }
 
