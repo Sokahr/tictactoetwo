@@ -6,4 +6,6 @@ public interface GameIO {
     void drawGame(char[][] fields);
 
     String getInput();
+
+    void showInfoMessage(String message);
 }
