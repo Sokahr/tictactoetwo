@@ -30,14 +30,9 @@ public class TicTacToeIOSystem implements GameIO {
     }
 
     @Override
-    public String getInput() {
-        try {
+    public String getInput() throws IOException {
             String line = bufferedReader.readLine();
             return line;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override

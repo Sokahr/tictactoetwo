@@ -3,6 +3,7 @@ package de.sokahr.ttt.player;
 import de.sokahr.ttt.GameIO;
 
 import java.awt.*;
+import java.io.IOException;
 
 public abstract class Player {
     private char symbol;
@@ -15,5 +16,5 @@ public abstract class Player {
         return symbol;
     }
 
-    public abstract Point makeMove(GameIO gameIO, char[][] fields);
+    public abstract Point makeMove(GameIO gameIO, char[][] fields) throws IOException;
 }

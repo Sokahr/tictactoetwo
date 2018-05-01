@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.VerificationModeFactory;
 
 import java.awt.*;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class HumanPlayerTest {
@@ -21,7 +23,7 @@ class HumanPlayerTest {
 
     @Test
     @DisplayName("makeMove should request the input")
-    void testMakeMoveCallsGameIO() {
+    void testMakeMoveCallsGameIO() throws IOException {
         GameIO mockIO = mock(GameIO.class);
         when(mockIO.getInput()).thenReturn("1,1");
         HumanPlayer humanPlayer = new HumanPlayer('X');
@@ -31,7 +33,7 @@ class HumanPlayerTest {
 
     @Test
     @DisplayName("makeMove returns a Point with the correct coordinates coressponding to the input")
-    void testMakeMoveReturnsAValidMove() {
+    void testMakeMoveReturnsAValidMove() throws IOException {
         GameIO mockIO = mock(GameIO.class);
         HumanPlayer humanPlayer = new HumanPlayer('X');
         when(mockIO.getInput()).thenReturn("1,1", "2,1", "1,3");
@@ -45,7 +47,7 @@ class HumanPlayerTest {
 
     @Test
     @DisplayName("makeMove shows error on invalid input and request input again")
-    void testMakeMoveShowsErrorOnInvalidInputAndRequestInputAgain() {
+    void testMakeMoveShowsErrorOnInvalidInputAndRequestInputAgain() throws IOException{
         GameIO mockIO = mock(GameIO.class);
         HumanPlayer humanPlayer = new HumanPlayer('P');
         when(mockIO.getInput()).thenReturn("what?","1,1");
@@ -56,7 +58,7 @@ class HumanPlayerTest {
 
     @Test
     @DisplayName("makeMove shows error in occupied field and requests input again")
-    void testMakeMoveShowsErrorOnOccupiedFieldAndRequestsInputAgain() {
+    void testMakeMoveShowsErrorOnOccupiedFieldAndRequestsInputAgain() throws IOException {
         GameIO mockIO = mock(GameIO.class);
         HumanPlayer humanPlayer = new HumanPlayer('X');
         char[][] fields = new char[2][2];
@@ -69,7 +71,7 @@ class HumanPlayerTest {
 
     @Test
     @DisplayName("makeMove shows error on out of reach fields and requests input again")
-    void testMakeMoveShowsErrorOnOutOfReachFieldAndRequestInputAgain() {
+    void testMakeMoveShowsErrorOnOutOfReachFieldAndRequestInputAgain() throws IOException {
         GameIO mockIO = mock(GameIO.class);
         HumanPlayer humanPlayer = new HumanPlayer('X');
         char[][] fields = new char[2][2];
@@ -77,5 +79,16 @@ class HumanPlayerTest {
         humanPlayer.makeMove(mockIO, fields);
         verify(mockIO, times(3)).getInput();
         verify(mockIO, times(2)).showErrorMessage("field is not in reach, please choose a different one");
+    }
+
+    @Test
+    @DisplayName("makeMove rethrows IOException, the player can not input the move.")
+    void testMakeMoveRethrowsIOException() throws IOException {
+        GameIO mockIO = mock(GameIO.class);
+        HumanPlayer humanPlayer = new HumanPlayer('X');
+        when(mockIO.getInput()).thenThrow(IOException.class);
+
+        assertThrows(IOException.class, ()->humanPlayer.makeMove(mockIO, new char[2][2]));
+
     }
 }

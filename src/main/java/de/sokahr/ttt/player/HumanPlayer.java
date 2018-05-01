@@ -3,6 +3,7 @@ package de.sokahr.ttt.player;
 import de.sokahr.ttt.GameIO;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class HumanPlayer extends Player {
     public HumanPlayer(char symbol) {
@@ -10,7 +11,7 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    public Point makeMove(GameIO gameIO, char[][] fields) {
+    public Point makeMove(GameIO gameIO, char[][] fields) throws IOException {
         String input = gameIO.getInput();
         String[] strings = input.split(",");
         Point result;

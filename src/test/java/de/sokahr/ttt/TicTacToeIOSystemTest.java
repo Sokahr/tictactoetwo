@@ -111,15 +111,16 @@ class TicTacToeIOSystemTest {
     }
 
     @Test
-    void testGetInputReturnsNullOnIOException() throws IOException {
+    @DisplayName("getInput rethrows the IOException to inform the calling classes.")
+    void testGetInputRethrowsIOException() throws IOException {
         TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
         ticTacToeIOSystem.bufferedReader = mock(BufferedReader.class);
         when(ticTacToeIOSystem.bufferedReader.readLine()).thenThrow(IOException.class);
-        String input = ticTacToeIOSystem.getInput();
-        assertNull(input);
+        assertThrows(IOException.class, ()->ticTacToeIOSystem.getInput());
     }
 
     @Test
+    @DisplayName("showInfoMessage just prints the message over System.out ")
     void testShowInfoMessagePrintsMessage() {
         TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
         ticTacToeIOSystem.showInfoMessage("Info");

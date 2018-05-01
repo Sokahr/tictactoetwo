@@ -5,6 +5,7 @@ import de.sokahr.ttt.player.HumanPlayer;
 import de.sokahr.ttt.player.Player;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -29,22 +30,29 @@ public class TicTacToeTwo {
         )));
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
         players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
-        Collections.shuffle(players,new Random(System.currentTimeMillis()));
+        Collections.shuffle(players, new Random(System.currentTimeMillis()));
         Iterator<Player> playerIterator = players.iterator();
 
-        while(TicTacToeGameValidator.validateMovesPossible(gameField.getFields())) {
+        while (TicTacToeGameValidator.validateMovesPossible(gameField.getFields())) {
             this.gameIO.drawGame(gameField.getFields());
             if (!playerIterator.hasNext()) {
                 playerIterator = players.iterator();
             }
             Player currentPlayer = playerIterator.next();
             Point move;
-            do {
-                gameIO.showInfoMessage("Player "+currentPlayer.getSymbol()+" make your move");
-                move = currentPlayer.makeMove(gameIO, gameField.getFields());
-            } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
-            if(TicTacToeGameValidator.validateWin(currentPlayer.getSymbol(), gameField.getFields())){
-                gameIO.showInfoMessage("Congratulations the player "+currentPlayer.getSymbol()+" won the game");
+            try {
+                do {
+                    gameIO.showInfoMessage("Player " + currentPlayer.getSymbol() + " make your move");
+                    move = currentPlayer.makeMove(gameIO, gameField.getFields());
+                } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
+            } catch (IOException e) {
+                gameIO.showErrorMessage("Player "+currentPlayer.getSymbol()+" has problems with input the game will " +
+                        "be canceled");
+                e.printStackTrace();
+                return;
+            }
+            if (TicTacToeGameValidator.validateWin(currentPlayer.getSymbol(), gameField.getFields())) {
+                gameIO.showInfoMessage("Congratulations the player " + currentPlayer.getSymbol() + " won the game");
                 return;
             }
         }
