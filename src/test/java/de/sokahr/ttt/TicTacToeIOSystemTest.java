@@ -5,13 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TicTacToeIOSystemTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -101,13 +100,13 @@ class TicTacToeIOSystemTest {
 
     @Test
     @DisplayName("getInput returns the current line of input")
-    void testGetInput() {
+    void testGetInput() throws IOException {
         TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
-        System.setIn(new ByteArrayInputStream("test input".getBytes()));
+        ticTacToeIOSystem.bufferedReader = mock(BufferedReader.class);
+        when(ticTacToeIOSystem.bufferedReader.readLine()).thenReturn("test input", "1,2");
         String input = ticTacToeIOSystem.getInput();
         assertEquals("test input", input);
 
-        System.setIn(new ByteArrayInputStream("1,2".getBytes()));
         input = ticTacToeIOSystem.getInput();
         assertEquals("1,2", input);
     }

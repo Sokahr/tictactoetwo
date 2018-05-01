@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class TicTacToeIOSystem implements GameIO {
 
-    private BufferedReader bufferedReader;
+    protected BufferedReader bufferedReader;
 
     public TicTacToeIOSystem() {
         InputStreamReader inputStreamReader = new InputStreamReader(System.in);
