@@ -6,6 +6,13 @@ import java.io.InputStreamReader;
 
 public class TicTacToeIOSystem implements GameIO {
 
+    private BufferedReader bufferedReader;
+
+    public TicTacToeIOSystem() {
+        InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+        bufferedReader = new BufferedReader(inputStreamReader);
+    }
+
     @Override
     public void showErrorMessage(String message) {
         System.err.println(message);
@@ -24,19 +31,11 @@ public class TicTacToeIOSystem implements GameIO {
 
     @Override
     public String getInput() {
-        InputStreamReader inputData = new InputStreamReader(System.in);
-            BufferedReader bufferedReader = new BufferedReader(inputData);
-
         try {
-            return bufferedReader.readLine();
+            String line = bufferedReader.readLine();
+            return line;
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                bufferedReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return null;
     }
@@ -46,17 +45,17 @@ public class TicTacToeIOSystem implements GameIO {
         System.out.println(message);
     }
 
-    private void drawRowFields(int columns, int rowNumber,char[][] fieldValues) {
+    private void drawRowFields(int columns, int rowNumber, char[][] fieldValues) {
         StringBuilder line = new StringBuilder();
-        line.append(rowNumber+1);
+        line.append(rowNumber + 1);
         for (int i = 0; i < columns; i++) {
             char fieldValue = fieldValues[i][rowNumber];
-            if(fieldValue == '\u0000'){
+            if (fieldValue == '\u0000') {
                 fieldValue = ' ';
             }
             line.append("| ").append(fieldValue).append(" ");
         }
-        line.append("|").append(rowNumber+1);
+        line.append("|").append(rowNumber + 1);
         System.out.println(line);
     }
 

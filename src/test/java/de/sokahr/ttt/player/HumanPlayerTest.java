@@ -23,6 +23,7 @@ class HumanPlayerTest {
     @DisplayName("makeMove should request the input")
     void testMakeMoveCallsGameIO() {
         GameIO mockIO = mock(GameIO.class);
+        when(mockIO.getInput()).thenReturn("1,1");
         HumanPlayer humanPlayer = new HumanPlayer('X');
         humanPlayer.makeMove(mockIO, new char[1][1]);
         verify(mockIO, VerificationModeFactory.times(1)).getInput();

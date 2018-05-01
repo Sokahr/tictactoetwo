@@ -29,7 +29,7 @@ public class TicTacToeTwo {
         )));
         players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
         players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
-        Collections.shuffle(players);
+        Collections.shuffle(players,new Random(System.currentTimeMillis()));
         Iterator<Player> playerIterator = players.iterator();
 
         while(TicTacToeGameValidator.validateMovesPossible(gameField.getFields())) {
@@ -40,9 +40,13 @@ public class TicTacToeTwo {
             Player currentPlayer = playerIterator.next();
             Point move;
             do {
+                gameIO.showInfoMessage("Player "+currentPlayer.getSymbol()+" make your move");
                 move = currentPlayer.makeMove(gameIO, gameField.getFields());
             } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
-
+            if(TicTacToeGameValidator.validateWin(currentPlayer.getSymbol(), gameField.getFields())){
+                gameIO.showInfoMessage("Congratulations the player "+currentPlayer.getSymbol()+" won the game");
+                return;
+            }
         }
         gameIO.showInfoMessage("Draw nobody won the game");
     }
