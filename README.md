@@ -1,5 +1,5 @@
-#TIC TAC TOE TWO
-##Basic Requirements
+# TIC TAC TOE TWO
+## Basic Requirements
 We want to bring the pen-and-paper game Tic-tac-toe to the digital age,
 but with a little twist: the size of the playfield should be
 configurable between 3x3 and 10x10. And we also want the symbols
@@ -14,7 +14,7 @@ After each move, the new state of the playfield is displayed and the
 player can enter the next position of their character one after
 another. The next position should be provided in a format like 3,2.
 Invalid inputs are expected to be handled appropriately.
-###Requirements:
+### Requirements:
 - Use the programming language you feel most comfortable with
 - The game takes 3 inputs:
 - Size of the playground. Valid values are between 3 and 10.
@@ -25,7 +25,7 @@ Invalid inputs are expected to be handled appropriately.
 - These configurations should come from a file
 - Software design is more important than a highly developed AI
 - Please put the completed assignment on GitHub.
-###Rules:
+### Rules:
 - You may use external libraries only for testing or building purposes
 e.g. JUnit, Gradle, Rspec, Rake, GulpJS, etc.
 - Please provide an explanation how to run your code
@@ -40,10 +40,17 @@ well tested and understandable.
 ini, ins, iw, jar, jsp, js, jse, pif, scr, shs, sh, vb, vbe, vbs, ws,
 wsc, wsf, wsh & msi
 
-##How to Run
+## How to Run
 You will need **JDK 1.8.0_172**
 If you run the gradle script directly it is build with **Gradle 4.7**
 Otherwise just use the gradle-wrapper.jar in /gradle/wrapper to execute the gradle tasks.
+### Run with pre installed Gradle
+Just enter gradle run in your terminal from the project root.
+### Run with gradle shell or bat (preconfigured gradlewrapper)
+Just enter *gradlew run* or *gradlew.bat run* in your terminal from the project root.
+
+
+
 
 
  
