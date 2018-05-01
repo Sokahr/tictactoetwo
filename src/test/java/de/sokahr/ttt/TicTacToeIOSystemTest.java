@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -109,6 +108,15 @@ class TicTacToeIOSystemTest {
 
         input = ticTacToeIOSystem.getInput();
         assertEquals("1,2", input);
+    }
+
+    @Test
+    void testGetInputReturnsNullOnIOException() throws IOException {
+        TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
+        ticTacToeIOSystem.bufferedReader = mock(BufferedReader.class);
+        when(ticTacToeIOSystem.bufferedReader.readLine()).thenThrow(IOException.class);
+        String input = ticTacToeIOSystem.getInput();
+        assertNull(input);
     }
 
     @Test
