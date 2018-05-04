@@ -49,7 +49,58 @@ Just enter gradle run in your terminal from the project root.
 ### Run with gradle shell or bat (preconfigured gradlewrapper)
 Just enter *gradlew run* or *gradlew.bat run* in your terminal from the project root.
 
+## Classes
+To prevent crashes the game will set default values on many points were null could be set or values could mismatch 
+and the user could not directly interact.
 
+### Main
+The main entry point. 
+
+This class loads a Properties file from the file system or loads the build in properties File.
+Uses the PropertyConfigurationReader to read the GameConfiguration from the Properties file.
+The game-object will be initialized, configured with the GameConfiguration , and started.
+After the game ends it will asks the user to play again or end the program.
+
+### PropertyConfigurationReader / ConfigurationReader 
+PropertyConfigurationReader reads a Properties-Object and creates a TicTacToeConfiguration.
+If in any case the Property-Object is null or wrong configured it will create a default Configuration.
+It implements ConfigurationReader as interface to be able to create a different ConfigurationReader i.E. to Parse .yml
+
+### TicTacToeConfiguration
+Is just a value container to hold the informations to create a new game. 
+The Game size and a list of PlayerConfigurations which holds the information which contains the information which 
+player type (human or computer) and what symbol.
+
+### TicTacToeTwo
+This is the game controller class. It creates a GameField and a List of Players according to the configuration.
+When the configuration is null it will set default values for the game.
+The main logic for the game flow is in here.
+
+### GameIO / TicTacToeIOSystem
+GameIO is a interface with the methods defined to communicate. The only implementation is TicTacToeIOSystem which 
+uses System.out, System.err and System.in for communication.
+A very important function for the GameIO is to draw the current gameField. 
+Other possibilities could be a REST interface, or WebSockets, or any other implementation.
+
+### TicTacToeGameField
+Container for the gameField. Encapsulates the interactions with the GameField.
+Ensures the gameField size is not larger then 10 or smaller then 3 fields.
+Validates if a move is possible.
+
+### Player classes
+The abstract Player class implements the simple field to get the symbol of the player and defines the abstract method
+ to make a move.
+ ComputerPlayer and HumanPlayer extends from Player and implements their special functionality to make a move.
+ The HumanPlayer communicates over GameIO to request the next move from the user. The ComputerPlayer just picks a 
+ random not occupied field.
+ The PlayerFactory creates a Player Object according to The PlayerConfiguration
+ 
+### TicTacToeGameValidator
+Contains static methods to validate the current state of the Game. 
+It validates if a player won or if noMove is possible.
+
+### PropertyKeys
+Just a class with constants to refer the property keys
 
 
 

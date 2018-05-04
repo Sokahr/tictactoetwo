@@ -1,159 +1,174 @@
 package de.sokahr.ttt;
 
+import de.sokahr.ttt.player.ComputerPlayer;
+import de.sokahr.ttt.player.HumanPlayer;
+import de.sokahr.ttt.player.Player;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 class TicTacToeTwoTest {
-/*
-    @Mock
-    private TicTacToeIOSystem gameIO = mock(TicTacToeIOSystem.class);
-    private Properties properties;
+
+    private GameIO gameIO;
+    private ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+    private PrintStream sysErr;
 
     @BeforeEach
     void setUp() {
-        properties = new Properties();
-        properties.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, "3");
-        properties.setProperty(ConfigurationKeys.PLAYER_A_SYMBOL, "X");
-        properties.setProperty(ConfigurationKeys.PLAYER_B_SYMBOL, "O");
-        properties.setProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, "#");
+        sysErr = System.err;
+        System.setErr(new PrintStream(errContent));
+        gameIO = mock(GameIO.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.setErr(sysErr);
     }
 
     @Test
-    @DisplayName("Constructor does not accept null for properties")
-    void testConstructorFailWithNull() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> new TicTacToeTwo(null, gameIO));
-        assertEquals("properties cannot be null", e.getMessage());
+    @DisplayName("Constructor will initialize a default IOSystem and shows errorMessage if gameIO was null")
+    void testConstructorInitDefaultGameIOIfNull() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(null);
+        assertThat(ticTacToeTwo.gameIO).isInstanceOf(TicTacToeIOSystem.class);
+        assertThat(errContent.toString()).contains("IO System was not set using SystemIO as default");
     }
 
     @Test
-    @DisplayName("Constructor does not accept a properties file with missing key playground.size")
-    void testContructorFailWithInvalidKeyFieldSize() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.remove(ConfigurationKeys.PLAYGROUND_SIZE);
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals("property '" + ConfigurationKeys.PLAYGROUND_SIZE + "' not found", e.getMessage());
+    @DisplayName("Constructor initialize with the given GameIO instant")
+    void testConstructorSetsTheGivenGameIO() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        assertThat(ticTacToeTwo.gameIO).isEqualTo(gameIO);
     }
 
     @Test
-    @DisplayName("Constructor does not accept a properties file with missing key player.a.symbol")
-    void testConstructorFailWithInvalidKeyPlayerASymbol() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.remove(ConfigurationKeys.PLAYER_A_SYMBOL);
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals("property '" + ConfigurationKeys.PLAYER_A_SYMBOL + "' not found", e.getMessage());
+    @DisplayName("configureGame configures and initialize game")
+    void testConfigureGameWillCreateAGameFieldAndAListOfPlayers() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ArrayList<PlayerConfiguration> players = new ArrayList<>();
+        players.add(new PlayerConfiguration(PlayerConfiguration.HUMAN, 'H'));
+        players.add(new PlayerConfiguration(PlayerConfiguration.COMPUTER, 'C'));
+        ticTacToeTwo.configureGame(new TicTacToeConfiguration(3, players));
+        assertAll(
+                () -> assertThat(ticTacToeTwo.gameField).isNotNull(),
+                () -> assertThat(ticTacToeTwo.players).isNotNull().hasSize(2)
+        );
     }
 
     @Test
-    @DisplayName("Constructor does not accept a properties file with missing key player.b.symbol")
-    void testConstructorFailWithInvalidKeyPlayerBSymbol() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.remove(ConfigurationKeys.PLAYER_B_SYMBOL);
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals("property '" + ConfigurationKeys.PLAYER_B_SYMBOL + "' not found", e.getMessage());
+    @DisplayName("configureGame create a defaultGame if configuration is null")
+    void testConfigureGameWillCreateADefaultGameIfConfigurationIsNull() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ticTacToeTwo.configureGame(null);
+        assertAll(
+                () -> assertThat(ticTacToeTwo.players).hasSize(3),
+                () -> assertThat(ticTacToeTwo.gameField).isNotNull()
+        );
+        verify(gameIO).showErrorMessage(any());
     }
 
     @Test
-    @DisplayName("Constructor does not accept a properties file with missing key player.computer.symbol")
-    void testConstructorFailWithInvalidKeyPlayerComputerSymbol() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.remove(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL);
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals("property '" + ConfigurationKeys.PLAYER_COMPUTER_SYMBOL + "' not found", e.getMessage());
+    @DisplayName("useDefaults configures default game")
+    void testUseDefaultsConfiguresDefaultGame() {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ticTacToeTwo.useDefaults();
+        assertAll(
+                () -> assertThat(ticTacToeTwo.gameField).isNotNull(),
+                ()->assertThat(ticTacToeTwo.gameField.fields).hasSize(4),
+                () -> assertThat(ticTacToeTwo.players)
+                        .hasSize(3)
+                        .hasOnlyElementsOfTypes(HumanPlayer.class, ComputerPlayer.class)
+        );
     }
 
     @Test
-    @DisplayName("Constructor does not accept null as gameIO")
-    void testConstructorFailWithNullAsGameIO() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> new TicTacToeTwo(properties, null));
-        assertEquals("gameIO must be provided", e.getMessage());
+    @DisplayName("play runs through a simple game")
+    void testPlay() throws IOException {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ticTacToeTwo.gameField=spy(new TicTacToeGameField(3));
+        ticTacToeTwo.players = new ArrayList<>();
+        Player playerA = mock(Player.class);
+        ticTacToeTwo.players.add(playerA);
+        Player playerB = mock(Player.class);
+        ticTacToeTwo.players.add(playerB);
+        when(playerA.makeMove(any(), any())).thenReturn(new Point(0,0), new Point(0,1), new Point(0,2));
+        when(playerA.getSymbol()).thenReturn('A');
+        when(playerB.makeMove(any(),any())).thenReturn(new Point(1,0), new Point(1,1), new Point(1,2));
+        when(playerB.getSymbol()).thenReturn('B');
+        ticTacToeTwo.play();
+
+        verify(gameIO, atLeast(5)).drawGame(any());
+        verify(gameIO, atLeast(6)).showInfoMessage(anyString());
+        verify(ticTacToeTwo.gameField).setMove(0, 0, 'A');
+        verify(ticTacToeTwo.gameField).setMove(0,1, 'A');
+        verify(ticTacToeTwo.gameField).setMove(1,0, 'B');
+        verify(ticTacToeTwo.gameField).setMove(1,1,'B');
     }
 
     @Test
-    @DisplayName("Constructor creates a gameField according to the property playground.size")
-    void testConstructorCreatesGameField() {
-        for (int size = 3; size < 11; size++) {
-            properties.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, String.valueOf(size));
-            TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
-            assertNotNull(ticTacToeTwo.getGameField());
-            assertEquals(size, ticTacToeTwo.getGameField().getFields().length);
-        }
+    void testPlayShowsErrorAndExitsIfPlayerMakeMoveThrowsIOException() throws IOException {
+
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ticTacToeTwo.gameField=spy(new TicTacToeGameField(3));
+        ticTacToeTwo.players = new ArrayList<>();
+        Player playerA = mock(Player.class);
+        ticTacToeTwo.players.add(playerA);
+        when(playerA.makeMove(any(), any())).thenThrow(IOException.class);
+        when(playerA.getSymbol()).thenReturn('A');
+        ticTacToeTwo.play();
+        verify(gameIO).showErrorMessage(any());
+        verify(gameIO,times(1)).showInfoMessage(any());
     }
 
     @Test
-    @DisplayName("Constructor fails when the playground.size is not a number")
-    void testConstructorFailWhenSizeNotANumber() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.setProperty(ConfigurationKeys.PLAYGROUND_SIZE, "xl");
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals(ConfigurationKeys.PLAYGROUND_SIZE + " is not a number", e.getMessage());
+    @DisplayName("turn shows an info message and returns true if the player makes a valid move")
+    void testTurnReturnsTrueIfThePlayerMakesAMove() throws IOException {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        Player player = mock(Player.class);
+        when(player.makeMove(any(),any())).thenReturn(new Point());
+        boolean turn = ticTacToeTwo.turn(player);
+        assertEquals(true, turn);
+        verify(gameIO).showInfoMessage(anyString());
     }
 
     @Test
-    @DisplayName("Contructor fails when the player.a.symbol is not a character")
-    void testConstructorFailWhenThePlayerASymbolIsNotACharacter() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.setProperty(ConfigurationKeys.PLAYER_A_SYMBOL, "playerA");
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals(ConfigurationKeys.PLAYER_A_SYMBOL + " is not a single character", e.getMessage());
+    @DisplayName("turn asks again if the move was invalid")
+    void testTurnAsksAgainIfTheMoveWasInvalid() throws IOException {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ticTacToeTwo.gameField = mock(TicTacToeGameField.class);
+        when(ticTacToeTwo.gameField.setMove(0,1,'A')).thenReturn(false);
+        when(ticTacToeTwo.gameField.setMove(1,1,'A')).thenReturn(true);
+        when(ticTacToeTwo.gameField.getFields()).thenReturn(new char[3][3]);
+        Player player = mock(Player.class);
+        when(player.getSymbol()).thenReturn('A');
+        when(player.makeMove(any(), any())).thenReturn(new Point(0,1), new Point(1,1));
+
+        ticTacToeTwo.turn(player);
+        verify(gameIO, atLeast(2)).showInfoMessage(any());
     }
 
     @Test
-    @DisplayName("Constructor fails when the player.b.symbol is not a character")
-    void testConstructorFailWhenPlayerBSymbolIsNotACharacter() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.setProperty(ConfigurationKeys.PLAYER_B_SYMBOL, "playerB");
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals(ConfigurationKeys.PLAYER_B_SYMBOL + " is not a single character", e.getMessage());
-    }
+    void testTurnShowsErrorAndReturnsFalseIfIOExceptionHappens() throws IOException {
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(gameIO);
+        ticTacToeTwo.gameField = mock(TicTacToeGameField.class);
+        when(ticTacToeTwo.gameField.getFields()).thenReturn(new char[3][3]);
+        Player player = mock(Player.class);
+        when(player.makeMove(any(),any())).thenThrow(IOException.class);
+        boolean turn = ticTacToeTwo.turn(player);
 
-    @Test
-    @DisplayName("Constructor will create two human players with the corresponding symbol")
-    void testConstructorCreatesHumanPlayers() {
-        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
-        assertNotNull(ticTacToeTwo.getPlayers());
-        assertThat(ticTacToeTwo.getPlayers()).size().isGreaterThanOrEqualTo(2);
-        assertThat(ticTacToeTwo.getPlayers()).hasAtLeastOneElementOfType(HumanPlayer.class);
-        assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('X', 'O');
+        verify(gameIO).showErrorMessage(any());
+        assertEquals(false, turn);
     }
-
-    @Test
-    @DisplayName("Constructor fails when the player.computer.symbol is not a character")
-    void testConstructorFailsWhenPlayerComputerSymbolIsNotACharacter() {
-        Throwable e = assertThrows(IllegalArgumentException.class, () -> {
-            properties.setProperty(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL, "playerC");
-            new TicTacToeTwo(properties, gameIO);
-        });
-        assertEquals(ConfigurationKeys.PLAYER_COMPUTER_SYMBOL + " is not a single character", e.getMessage());
-    }
-
-    @Test
-    @DisplayName("Constructor will create one computer player with the corresponding symbol")
-    void testConstructorCreatesComputerPlayer() {
-        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
-        assertNotNull(ticTacToeTwo.getPlayers());
-        assertThat(ticTacToeTwo.getPlayers()).size().isGreaterThanOrEqualTo(1);
-        assertThat(ticTacToeTwo.getPlayers()).hasAtLeastOneElementOfType(ComputerPlayer.class);
-        assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('#');
-    }
-
-    @Test
-    @DisplayName("Constructor will create all Players")
-    void testConstructorCreatesAllPlayers() {
-        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
-        assertNotNull(ticTacToeTwo.getPlayers());
-        assertThat(ticTacToeTwo.getPlayers()).size().isEqualTo(3);
-        assertThat(ticTacToeTwo.getPlayers()).hasOnlyElementsOfType(Player.class);
-        assertThat(ticTacToeTwo.getPlayers()).extracting("symbol").contains('O','X','#');
-    }
-
-    @Test
-    @DisplayName("calls drawGame on GameIO")
-    void testCallsDrawGame() {
-        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(properties, gameIO);
-        verify(gameIO).drawGame(ticTacToeTwo.getGameField().getFields());
-    }*/
 }

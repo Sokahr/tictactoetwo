@@ -1,8 +1,7 @@
 package de.sokahr.ttt;
 
-import de.sokahr.ttt.player.ComputerPlayer;
-import de.sokahr.ttt.player.HumanPlayer;
 import de.sokahr.ttt.player.Player;
+import de.sokahr.ttt.player.PlayerFactory;
 
 import java.awt.*;
 import java.io.IOException;
@@ -11,26 +10,47 @@ import java.util.List;
 
 public class TicTacToeTwo {
 
-    private GameIO gameIO;
-    private TicTacToeGameField gameField;
-    private List<Player> players;
+    GameIO gameIO;
+    TicTacToeGameField gameField;
+    List<Player> players;
 
-    public TicTacToeTwo(Properties properties, GameIO gameIO) {
+    public TicTacToeTwo(GameIO gameIO) {
         this.gameIO = gameIO;
         if (gameIO == null) {
-            throw new IllegalArgumentException("gameIO must be provided");
+            this.gameIO = new TicTacToeIOSystem();
+            this.gameIO.showErrorMessage("IO System was not set using SystemIO as default");
         }
-        if (properties == null) {
-            throw new IllegalArgumentException("properties cannot be null");
-        }
-        initGameField(properties);
+    }
 
+    public void configureGame(TicTacToeConfiguration configuration) {
+        if (configuration != null) {
+            gameField = new TicTacToeGameField(configuration.getFieldSize());
+            players = new ArrayList<>();
+            for (Iterator<PlayerConfiguration> it = configuration.getPlayers(); it.hasNext(); ) {
+                PlayerConfiguration playerConfig = it.next();
+                players.add(PlayerFactory.getPlayer(playerConfig));
+            }
+        } else {
+            gameIO.showErrorMessage("Game configuration not set configure now with defaults");
+            useDefaults();
+        }
+    }
+
+    void useDefaults() {
+        gameField = new TicTacToeGameField(4);
         players = new ArrayList<>();
-        players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_A_SYMBOL
-        )));
-        players.add(new HumanPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_B_SYMBOL)));
-        players.add(new ComputerPlayer(getSymbol(properties, ConfigurationKeys.PLAYER_COMPUTER_SYMBOL)));
+        players.add(PlayerFactory.getPlayer(new PlayerConfiguration(PlayerConfiguration.HUMAN, 'X')));
+        players.add(PlayerFactory.getPlayer(new PlayerConfiguration(PlayerConfiguration.HUMAN, 'O')));
+        players.add(PlayerFactory.getPlayer(new PlayerConfiguration(PlayerConfiguration.COMPUTER, '@')));
+    }
+
+    public void play() {
+        if (gameField == null || players == null || players.isEmpty()) {
+            gameIO.showErrorMessage("Game configuration not set configure now with defaults");
+            useDefaults();
+        }
         Collections.shuffle(players, new Random(System.currentTimeMillis()));
+
         Iterator<Player> playerIterator = players.iterator();
 
         while (TicTacToeGameValidator.validateMovesPossible(gameField.getFields())) {
@@ -39,16 +59,7 @@ public class TicTacToeTwo {
                 playerIterator = players.iterator();
             }
             Player currentPlayer = playerIterator.next();
-            Point move;
-            try {
-                do {
-                    gameIO.showInfoMessage("Player " + currentPlayer.getSymbol() + " make your move");
-                    move = currentPlayer.makeMove(gameIO, gameField.getFields());
-                } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
-            } catch (IOException e) {
-                gameIO.showErrorMessage("Player "+currentPlayer.getSymbol()+" has problems with input the game will " +
-                        "be canceled");
-                e.printStackTrace();
+            if (!turn(currentPlayer)) {
                 return;
             }
             if (TicTacToeGameValidator.validateWin(currentPlayer.getSymbol(), gameField.getFields())) {
@@ -59,37 +70,19 @@ public class TicTacToeTwo {
         gameIO.showInfoMessage("Draw nobody won the game");
     }
 
-    private char getSymbol(Properties properties, String symbolKey) {
-        validateProperty(symbolKey, properties);
-        String playerASymbolProp = properties.getProperty(symbolKey);
-        if (playerASymbolProp.length() > 1) {
-            throw new IllegalArgumentException(symbolKey + " is not a single character");
-        }
-        return playerASymbolProp.charAt(0);
-    }
-
-    private void initGameField(Properties properties) {
-        validateProperty(ConfigurationKeys.PLAYGROUND_SIZE, properties);
-        int size;
+    boolean turn(Player currentPlayer) {
         try {
-            size = Integer.parseInt(properties.getProperty(ConfigurationKeys.PLAYGROUND_SIZE));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(ConfigurationKeys.PLAYGROUND_SIZE + " is not a number");
+            Point move;
+            do {
+                gameIO.showInfoMessage("Player " + currentPlayer.getSymbol() + " make your move");
+                move = currentPlayer.makeMove(gameIO, gameField.getFields());
+            } while (!gameField.setMove(move.x, move.y, currentPlayer.getSymbol()));
+        } catch (IOException e) {
+            gameIO.showErrorMessage("Player " + currentPlayer.getSymbol() + " has problems with input the game will " +
+                    "be canceled");
+            e.printStackTrace();
+            return false;
         }
-        gameField = new TicTacToeGameField(size);
-    }
-
-    private void validateProperty(String key, Properties properties) throws IllegalArgumentException {
-        if (!properties.containsKey(key)) {
-            throw new IllegalArgumentException("property '" + key + "' not found");
-        }
-    }
-
-    TicTacToeGameField getGameField() {
-        return gameField;
-    }
-
-    List<Player> getPlayers() {
-        return players;
+        return true;
     }
 }

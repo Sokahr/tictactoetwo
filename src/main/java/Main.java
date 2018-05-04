@@ -1,3 +1,5 @@
+import de.sokahr.ttt.ConfigurationReader;
+import de.sokahr.ttt.PropertyConfigurationReader;
 import de.sokahr.ttt.TicTacToeIOSystem;
 import de.sokahr.ttt.TicTacToeTwo;
 
@@ -11,12 +13,23 @@ public class Main {
 
     public static void main(String[] args) {
         Properties properties = getProperties();
-        if (properties.isEmpty()) {
-            System.out.println("properties are empty");
-            return;
+        ConfigurationReader configurationReader = new PropertyConfigurationReader(properties);
+        TicTacToeIOSystem ticTacToeIOSystem = new TicTacToeIOSystem();
+        TicTacToeTwo ticTacToeTwo = new TicTacToeTwo(ticTacToeIOSystem);
+        while (true){
+            ticTacToeTwo.configureGame( configurationReader.read(ticTacToeIOSystem) );
+            ticTacToeTwo.play();
+            ticTacToeIOSystem.showInfoMessage("Play another round? [Y/N]");
+            try {
+                String input = ticTacToeIOSystem.getInput();
+                if(input.toUpperCase().contains("N")) {
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
         }
-        new TicTacToeTwo(properties, new TicTacToeIOSystem());
-
     }
 
     private static Properties getProperties() {
